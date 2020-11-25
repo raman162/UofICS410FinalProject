@@ -10,7 +10,7 @@ were labelled as a positive outcome due to the telehealth services while
 another file named `no_positive_encounters.csv` only contained notes that
 weren't labelled as a positive outcome for the patient. It should be noted that
 lack of a positive outcome does not mean a negative outcome, it just implies
-that no serious value was added to the patient's care.
+that there was no major positive impact from the telehealth service.
 
 The format of the exported CSV files are as follows:
 `<note_id>,<patient_id>,<purpose>,<duration>,<note>` The `<purpose>` is an
@@ -90,9 +90,9 @@ possibility on not redacting all PHI data. To minimize actual PHI distributed,
 50 samples were taken from both the `positive_encounters.res` and
 `no_positive_encounters.res` file and manually verified to not contain PHI.
 After the verification, the sampled data was shared with the rest of the team
-so they can design the scripts to perform the topic mining and analysis. This
-was accomplished by utilizing the `deid_support/sample_res.rb`. The following
-commands ran were:
+so to create scripts that will perform the topic mining and analysis. This
+was accomplished by utilizing the `deid_support/sample_res.rb` and running the
+following commands:
 
 ```
 # sample res files per manual review
@@ -103,8 +103,8 @@ ruby deid_support/sample_res.rb no_positive_encounters.res 50
 The output produced two files only containing 50 redacted PHI documents named
 `positive_encounters.res-sample-50.res` and
 `no_positive_encounters.res-sample-50.res` respectively. After manual
-verification of no PHI, these sampled files were then transformed to the
-original CSV format by running the following commands:
+verification that all PHI was redacted, the sampled files were transformed to
+the original CSV format by running the following commands:
 
 ```
 # convert sampled res files to CSV format
