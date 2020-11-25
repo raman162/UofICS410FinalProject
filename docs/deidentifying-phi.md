@@ -22,8 +22,6 @@ encounter that we will be performing topic mining on. A total of 10,000
 positive encounter notes and 10,000 non positive encounter notes were exported
 for analysis.
 
-To ensure we're adhering to HIPPA ^[HIPPA Privacy Guidelines,
-<https://www.hhs.gov/hipaa/for-professionals/privacy/index.html>] guidelines,
 To redact PHI in the notes, we utilized the De-Identification (DEID) Software
 Package ^[De-Identification Software Package,
 <https://www.physionet.org/content/deid/1.1/>]. For the DEID to be effective,
