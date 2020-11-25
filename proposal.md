@@ -48,7 +48,7 @@ patient profile known to contain PHI will be replaced as well.
 ### Topic Mining and Analysis on Dataset
 
 Expected Duration: 20 hours  
-Expected Completion Date: November 24nd
+Expected Completion Date: November 24th
 
 We plan on mining the topic models using Latent Dirichlet Allocation ^[Latent
 Dirichlet Allocation (LDA), <https://arxiv.org/pdf/1711.04305.pdf>] for both
