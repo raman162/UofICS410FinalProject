@@ -57,6 +57,7 @@ ruby script located at `deid_support/convert_csv_to_text.rb` and ran the
 following commands:
 
 ```
+# convert csv files to deid text format
 ruby deid_support/convert_csv_to_text.rb positive_encounters.csv
 ruby deid_support/convert_csv_to_text.rb no_positive_encounters.csv
 ```
@@ -67,6 +68,7 @@ copied into the DEID directory and  we ran the DEID perl script to
 remove the PHI using the following commands:
 
 ```
+# redact PHI from text files
 perl deid.pl positive_encounters deid-output.config
 perl deid.pl no_positive_encounters deid-output.config
 ```
@@ -77,6 +79,7 @@ used the following script located at `deid_support/convert_res_to_csv.rb` and
 ran the following commands:
 
 ```
+# convert redacted res files to csv
 ruby deid_support/convert_res_to_csv.rb positive_encounters.res positive_encounters.csv
 ruby deid_support/convert_res_to_csv.rb no_positive_encounters.res no_positive_encounters.csv
 ```
@@ -105,8 +108,8 @@ The output produced two files only containing 50 redacted PHI documents named
 verification of no PHI, these sampled files were then transformed to the
 original CSV format by running the following commands:
 
-# convert sampled res files to CSV format
 ```
+# convert sampled res files to CSV format
 ruby deid_support/convert_res_to_csv.rb positive_encounters.res-sample-50.res positive_encounters.csv
 ruby deid_support/convert_res_to_csv.rb no_positive_encounters.res-sample-50.res no_positive_encounters.csv
 ```
