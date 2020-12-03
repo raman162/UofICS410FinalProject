@@ -3,3 +3,7 @@
 ## Proposal
 
 [Proposal PDF](proposal.pdf)
+
+## Progress Report
+
+[Progress Report PDF](progress_report.pdf)
