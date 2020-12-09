@@ -1,2 +1,4 @@
 patient_data
 sample_data
+classifier/venv
+classifier/__pycache__
