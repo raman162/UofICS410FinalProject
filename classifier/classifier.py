@@ -3,19 +3,19 @@ import re
 import nltk
 import pickle
 import csv
+import sklearn
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 nltk.download('wordnet')
 nltk.download('stopwords')
 
 ## PATH TO FILES
-POSITIVE_CSV_FILE = '../patient_data/positive_encounters.res.csv'
-NO_POSITIVE_CSV_FILE = '../patient_data/no_positive_encounters.res.csv'
+POSITIVE_CSV_FILE = '../patient_data/positive_encounters.res-sample-50.res.csv'
+NO_POSITIVE_CSV_FILE = '../patient_data/no_positive_encounters.res-sample-50.res.csv'
 CLASSIFIER_FILE = './text_classifier'
 
 def load_data():
@@ -78,8 +78,8 @@ def clean_data(docs):
 
     return clean_docs
 
-def generate(docs, labels, n_estimators=1000, test_size=0.2, random_state=0, max_features=2000, min_df=10, max_df=0.8):
-    numeric_docs = transform_docs_to_numeric(docs, max_features, min_df, max_df)
+def generate(docs, labels, n_estimators=750, test_size=0.2, random_state=0, max_features=1500, min_df=10, max_df=0.8):
+    numeric_docs = transform_data_to_numeric(docs, max_features, min_df, max_df)
     train_docs, test_docs, train_labels, test_labels = train_test_split(
         numeric_docs,
         labels,
@@ -97,7 +97,11 @@ def generate(docs, labels, n_estimators=1000, test_size=0.2, random_state=0, max
         }
     return classifier, train_test_data
 
-def transform_docs_to_numeric(docs, max_features=2000, min_df=10, max_df=0.8):
+def prepare_data(docs):
+    transform_data_to_numeric(clean_data(docs))
+
+
+def transform_data_to_numeric(docs, max_features=2000, min_df=10, max_df=0.8):
     transformer = TfidfVectorizer(
             max_features=max_features,
             min_df=min_df,
@@ -109,9 +113,12 @@ def evaluate(classifier, train_test_data):
     test_docs = train_test_data['test_docs']
     test_labels = train_test_data['test_labels']
     predict_labels = classifier.predict(test_docs)
-    print(confusion_matrix(test_labels, predict_labels))
-    print(classification_report(test_labels, predict_labels))
-    print(accuracy_score(test_labels, predict_labels))
+    metrics = {
+            "accuracy": sklearn.metrics.accuracy_score(test_labels, predict_labels),
+            }
+    print(sklearn.metrics.classification_report(test_labels, predict_labels))
+    print("Accuracy: ", metrics['accuracy'])
+    return metrics
 
 def store(classifier, file_path):
     with open(file_path, 'wb') as picklefile:
@@ -124,8 +131,12 @@ def load(file_path):
     return classifier
 
 def optimize_score(**kwargs):
-    docs, labels = load_data()
-    clean_docs = clean_data(docs)
+    if kwargs.get('docs', None) == None or kwargs.get('labels', None) == None:
+        raw_docs, labels = load_data()
+        docs = clean_data(raw_docs)
+    else:
+        docs = clean_data(kwargs.get('docs'))
+        labels = kwargs.get('labels')
     min_features = kwargs.get('min_features', 1000)
     max_features = kwargs.get('max_features', 5000)
     feature_step = kwargs.get('feature_step', 250)
@@ -145,18 +156,14 @@ def optimize_score(**kwargs):
             print("# Of Features: ", num_features)
             print("# Of Estimators: ", num_estimators)
             classifier, train_test_data = generate(
-                    clean_docs,
+                    docs,
                     labels,
                     n_estimators=num_estimators,
                     max_features=num_features,
                     min_df=min_df,
                     max_df=max_df)
-            predict_labels = classifier.predict(train_test_data['test_docs'])
-            score = accuracy_score(
-                    train_test_data['test_labels'],
-                    predict_labels)
-            scores[feature_index][estimator_index] = score
-            print("Score: ", score)
+            metrics = evaluate(classifier, train_test_data)
+            scores[feature_index][estimator_index] = metrics['accuracy']
             print("###################\n\n")
 
     optimal_feature_index, optimal_estimator_index = np.unravel_index(
@@ -174,6 +181,6 @@ def optimize_score(**kwargs):
 if __name__ == '__main__':
     docs, labels = load_data()
     clean_docs = clean_data(docs)
-    classifier, train_test_data = generate(transformed_docs, labels)
-    evaluate(classifier, train_test_data)
+    classifier, train_test_data = generate(clean_docs, labels)
+    metrics = evaluate(classifier, train_test_data)
     store(classifier, CLASSIFIER_FILE)
