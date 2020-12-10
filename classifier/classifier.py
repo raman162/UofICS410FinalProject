@@ -78,17 +78,10 @@ def clean_data(docs):
 
     return clean_docs
 
-def transform_docs_to_numeric(docs, max_features=2000, min_df=10, max_df=0.8):
-    transformer = TfidfVectorizer(
-            max_features=max_features,
-            min_df=min_df,
-            max_df=max_df,
-            stop_words = stopwords.words('english'))
-    return transformer.fit_transform(docs).toarray()
-
-def generate_classifier(docs, labels, n_estimators=1000, test_size=0.2, random_state=0):
+def generate(docs, labels, n_estimators=1000, test_size=0.2, random_state=0, max_features=2000, min_df=10, max_df=0.8):
+    numeric_docs = transform_docs_to_numeric(docs, max_features, min_df, max_df)
     train_docs, test_docs, train_labels, test_labels = train_test_split(
-        docs,
+        numeric_docs,
         labels,
         test_size=test_size,
         random_state=random_state)
@@ -100,11 +93,19 @@ def generate_classifier(docs, labels, n_estimators=1000, test_size=0.2, random_s
             'train_docs': train_docs,
             'test_docs': test_docs,
             'train_labels': train_labels,
-            'test_labels': test_labels
+            'test_labels': test_labels,
         }
     return classifier, train_test_data
 
-def evaluate_classifier(classifier, train_test_data):
+def transform_docs_to_numeric(docs, max_features=2000, min_df=10, max_df=0.8):
+    transformer = TfidfVectorizer(
+            max_features=max_features,
+            min_df=min_df,
+            max_df=max_df,
+            stop_words = stopwords.words('english'))
+    return transformer.fit_transform(docs).toarray()
+
+def evaluate(classifier, train_test_data):
     test_docs = train_test_data['test_docs']
     test_labels = train_test_data['test_labels']
     predict_labels = classifier.predict(test_docs)
@@ -112,18 +113,17 @@ def evaluate_classifier(classifier, train_test_data):
     print(classification_report(test_labels, predict_labels))
     print(accuracy_score(test_labels, predict_labels))
 
-def store_classifier(classifier, file_path):
+def store(classifier, file_path):
     with open(file_path, 'wb') as picklefile:
         pickle.dump(classifier, picklefile)
 
-def load_classifier(file_path):
+def load(file_path):
     classifier = None
     with open(file_path, 'rb') as picklefile:
         classifier = pickle.load(picklefile)
     return classifier
 
-
-def build_optimized_classifier(**kwargs):
+def optimize_score(**kwargs):
     docs, labels = load_data()
     clean_docs = clean_data(docs)
     min_features = kwargs.get('min_features', 1000)
@@ -144,15 +144,13 @@ def build_optimized_classifier(**kwargs):
             print("###################")
             print("# Of Features: ", num_features)
             print("# Of Estimators: ", num_estimators)
-            transformed_docs = transform_docs_to_numeric(
+            classifier, train_test_data = generate(
                     clean_docs,
+                    labels,
+                    n_estimators=num_estimators,
                     max_features=num_features,
                     min_df=min_df,
                     max_df=max_df)
-            classifier, train_test_data = generate_classifier(
-                    transformed_docs,
-                    labels,
-                    n_estimators=num_estimators)
             predict_labels = classifier.predict(train_test_data['test_docs'])
             score = accuracy_score(
                     train_test_data['test_labels'],
@@ -173,14 +171,9 @@ def build_optimized_classifier(**kwargs):
             'optimal_num_estimators': estimator_steps[optimal_estimator_index]
             }
 
-
-
-
-
 if __name__ == '__main__':
     docs, labels = load_data()
     clean_docs = clean_data(docs)
-    transformed_docs = transform_docs_to_numeric(clean_docs)
-    classifier, train_test_data = generate_classifier(transformed_docs, labels)
-    evaluate_classifier(classifier, train_test_data)
-    store_classifier(classifier, CLASSIFIER_FILE)
+    classifier, train_test_data = generate(transformed_docs, labels)
+    evaluate(classifier, train_test_data)
+    store(classifier, CLASSIFIER_FILE)
