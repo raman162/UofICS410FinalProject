@@ -4,12 +4,14 @@ import pandas as pd
 import nltk
 import csv
 from csv import DictReader
-#from nltk.corpus import stopwords
+from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 #print('__file__={0:<35} | __name__={1:<20} | __package__={2:<20}'.format(__file__,__name__,str(__package__)))
-#from ..classifier import generate_model as gm
+#from ..classifier import classifier as gm
 
 import re
+nltk.download('wordnet')
+nltk.download('stopwords')
 
 class TelehealthMiner(object):
     def __init__(self, data_path):
@@ -34,17 +36,21 @@ class TelehealthMiner(object):
 
         self.pos_purpose_path = data_path + 'positive_purpose.txt'
         self.no_pos_purpose_path = data_path + 'no_positive_purpose.txt'
+        self.stop_words = stopwords.words('english')
 
-    def clean_data(self):
+    def clean_data(self,flag):
         #if flag == 0:
          #   docs = self.pos_notes
         #else:
          #   docs = self.no_pos_notes
-        print("I m here")
         clean_docs = []
-        nltk.download('wordnet')
+        dirty_docs = []
         stemmer = WordNetLemmatizer()
-        for dirty_doc in self.pos_notes_raw:
+        if (flag == 'pos') : 
+            dirty_docs = self.pos_notes_raw
+        else:
+            dirty_docs = self.no_pos_notes_raw
+        for dirty_doc in dirty_docs:
             dirty_doc=' '.join(dirty_doc)
             # remove phi redaction brackets
             clean_doc = re.sub(r'\[\*\*.*?\*\*\]+', ' ', dirty_doc)
@@ -82,7 +88,8 @@ class TelehealthMiner(object):
         #print(self.pos_notes[0])
        # self.pos_notes = clean_data(self.pos_notes)
        # self.no_pos_notes = gm.clean_data(self.no_pos_notes)
-        self.pos_notes = self.clean_data()
+        self.pos_notes = self.clean_data('pos')
+        self.no_pos_notes = self.clean_data('no_pos')
 
         print(self.pos_notes[0])
 
@@ -112,15 +119,33 @@ class TelehealthMiner(object):
 
         Update self.number_of_documents
         """
-        #self.pos_notes, self.number_of_pos_notes = self.corpus_builder(self.pos_note_path, self.pos_notes, self.number_of_pos_notes)
         self.pos_notes, self.number_of_pos_notes = self.corpus_builder(0)
-        #self.no_pos_notes, self.number_of_no_pos_notes = self.corpus_builder(self.no_pos_note_path, self.no_pos_notes, self.number_of_no_pos_notes)
         self.no_pos_notes, self.number_of_no_pos_notes = self.corpus_builder(1)
 
+    def vocabulary_builder(self, flag):
+        result_vocabulary = []
+        if (flag =='pos'):
+            lines = self.pos_notes
+        else:
+            lines = self.no_pos_notes
+            
+        for line in lines:
+            lineSplit = line.split(' ')
+            np.unique(lineSplit)
+            for word in lineSplit:
+                if (word not in self.stop_words):
+                    result_vocabulary.append(word)
+                    
+        return result_vocabulary
+    
     def build_vocabulary(self):
-        pos_vocabulary = []
-        no_pos_vocabulary = []
-
+        pos_vocabulary = self.vocabulary_builder('pos')
+        no_pos_vocabulary = self.vocabulary_builder('no_pos')
+        
+        print(pos_vocabulary)
+        print(no_pos_vocabulary)
+        
+        
     def topic_miner(self):
         """
         This is topic miner function
@@ -133,39 +158,12 @@ class TelehealthMiner(object):
         This function is to extract notes from the encounters CSV file
         :return:
         """
-        ## This worked ##
         pos_encounters = pd.read_csv(self.pos_en_path, sep=',', header='infer')
         no_pos_encounters = pd.read_csv(self.no_pos_en_path, sep=',', header='infer')
         
         self.pos_notes_raw = pos_encounters.iloc[:,[False,False,False,False,True]].values.tolist()
-        #print(self.pos_notes_raw)
-        ## This worked End ##
-        #with open(self.pos_en_path) as csv_file:
-          #  csv_reader = csv.reader(csv_file, delimiter=',')
-           # line_count = 0
-            #for row in csv_reader:
-             #   if line_count > 0:
-              #      self.no_pos_notes_raw.append(row[4])
-           # line_count += 1
-        #print(self.pos_notes_raw)
-        
-        #with open(self.no_pos_en_path, 'r') as csvFile:
-         #   csvReader = DictReader(csvFile)
-          #  for row in csvReader:
-           #     self.pos_notes_raw.append(row['note'])
-      
+        self.no_pos_notes_raw = no_pos_encounters.iloc[:,[False,False,False,False,True]].values.tolist()
 
-        ##with open(self.pos_note_path, 'w') as f:
-           ## f.write(pos_encounters['note'].str.cat(sep='\n'))
-
-        ##with open(self.no_pos_note_path, 'w') as f:
-           ## f.write(no_pos_encounters['note'].str.cat(sep='\n'))
-
-        ##with open(self.pos_purpose_path, 'w') as f:
-           ## f.write(pos_encounters['purpose'].str.cat(sep='\n'))
-
-        ##with open(self.no_pos_purpose_path, 'w') as f:
-          ##  f.write(no_pos_encounters['purpose'].str.cat(sep='\n'))
 
 def main():
     """
@@ -176,8 +174,9 @@ def main():
     # Write the main code here
     miner = TelehealthMiner(data_path)
     miner.extract_purpose_notes()
-     ## miner.build_corpus()
+    #miner.build_corpus()
     miner.clean_notes()
+    miner.build_vocabulary()
     ##miner.topic_miner()
 
 
