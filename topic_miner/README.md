@@ -7,7 +7,7 @@ The Topic Miner module is implementation of PLSA and mine topics from Documents
         This sub module is to generate Stop words. The file generated (stopwords.txt) will be used as stop words.
 - [ ] topic_miner
 
-        This is the module implementing PLSA and generating Vocabular/Dictionary, top words of topics and coverage probabilities
+        This is the module implementing PLSA and generating Vocabulary/Dictionary, stop words of topics and coverage probabilities
         
 ### Usage
 ##### stopwords
@@ -16,11 +16,14 @@ The Topic Miner module is implementation of PLSA and mine topics from Documents
         python topic_miner.py data_file.csv stopwords.txt <num_topics> <num_iterations> <epsilon> <num_topic-words> <output-doc_topic_coverage-file> <output-topic_word_coverage> <output-vocabulary-file> <output-topic_words-file>
         
         Example:
-        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 50 3.0 1000 ../doctopic.txt ../topicword.txt ../dictionary.dic ../topics.txt
+        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 50 5.0 1000 ../output/doctopic.txt ../output/topicword.txt ../output/dictionary.dic ../output/topics.txt
 
 #### Usage guidelines
-- [ ] The input is present in a folder "patient_data" as a child folder under root of the project i.e.
-- [ ] Make sure stopwords.txt generated from stopwords sub-module is copied to 
+- [ ] The input is present in a folder "patient_data" as a child folder under root of the project i.e. at the same level as "topic_miner"
+- [ ] Since the input data may have PHI information,  
+- [ ] Make sure stopwords.txt generated from stopwords sub-module is copied to "patient_data" folder
+- [ ] Make sure the input file (data_file.csv) is in CSV format and it has "note" field/column in the input file
+- [ ] Values in "note" field of the input file is documents
 
 #### Arguments Explanation
 | Argument | Description |
