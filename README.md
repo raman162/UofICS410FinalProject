@@ -139,8 +139,27 @@ This sampled may be provided upon request by emailing
 
 ### Topic Mining and Analysis on Dataset
 
-TODO
+__Requirements:__
+- [Python 3.X](https://www.python.org/)
 
+_Python Libraries Used:_
+- nltk
+- pandas
+- numpy
+- matplotlib/pylab
+- regex
+
+__Extracting Documents__
+
+The source to extract documents from is the notes. The Telemedicine responses are saved as CSV files with multiple fields. "notes" from the response file is fed as Document input to our PLSA implementation. The input responses file is in CSV file and the data is delimited by "," character.
+
+__Generating stop words__
+
+Stop words are generated using standard python nltk libraries. The stopwords are saved as file and is used as input for topic_miner program. stop words can be manually edited adding any tele-medicine specific words such as patient, call, treatment, phone etc.. since these are repeated frequently in every note. stop words program is run separately and the file is saved under "patient_data" folder where the input files are placed under.
+
+__Mining Topics from Documents__
+
+The topic_miner is run with data-file (in CSV format), stop-words file as input. The additional arguments to the program include number of topics, Max Iterations, Threshold, Number of Topic words. The arguments also include the path to output files: Document Topic Coverage, Topic Word Coverage, Vocabulary and Topic words.
 
 ### Classifier
 
