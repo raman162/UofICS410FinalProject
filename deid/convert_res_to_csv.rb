@@ -16,10 +16,10 @@ res_file_content = IO.read(res_file_path)
 res_records = res_file_content.
   split("\n||||END_OF_RECORD").
   map{|rec| rec.match(RES_REGEX)}.
+  select{|md| !md.nil?}.
   map{|md| {patient_id: md[:PT_ID], id: md[:ENC_ID], note: md[:NOTE]}}.
   map do |r|
-    og_row = og_enc_csv_records.find{|o| o['id'] == r[:id]}
-    binding.pry if og_row.nil?
+    og_row = og_enc_csv_records.find{|o| o['id'] == r[:id]} || {}
     r.merge({
       purpose: og_row['purpose'],
       duration: og_row['duration']
