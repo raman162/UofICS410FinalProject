@@ -10,4 +10,5 @@ nltk.download('stopwords')
 f = open("stopwords.txt", "w")
 stopWords = stopwords.words('english')
 for word in stopWords:
-    f.write(word)
+    f.write(word+"\n")
+f.close()
