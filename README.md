@@ -47,6 +47,8 @@ encounter took, and `<note>` is the free-text nursing note summarizing the
 encounter. The `<note>` data is what the topic mining and classification will
 be performed on.
 
+![Positive Encounter Note CSV](assets/positive-encounters-csv.png)
+
 #### Automating De-Identification of Protected Health Information (PHI)
 
 To ensure we're adhering to [HIPPA Privacy
@@ -89,6 +91,8 @@ ruby deid/convert_csv_to_text.rb demo_data/positive_encounters.csv
 ruby deid/convert_csv_to_text.rb demo_data/no_positive_encounters.csv
 ```
 
+![Positive Encounters DEID Input Text Format](assets/positive-encounters-deid-text.png)
+
 The output produced two files named `positive_encounters.text` and
 `no_positive_encounters.text` respectively. Afterwards we ran the DEID perl
 script to remove the PHI using the following commands:
@@ -101,6 +105,9 @@ cd deid
 perl deid.pl ../demo_data/positive_encounters deid-output.config
 perl deid.pl ../demo_data/no_positive_encounters deid-output.config
 ```
+
+![Positive Encounters DEID Redacted Text](assets/positive-encounters-deid-res.png)
+
 
 The output produced two PHI redacted files named `positive_encounters.res` and
 `no_positive_encounters.res`. To convert the files back into the CSV format, we
@@ -119,6 +126,9 @@ ruby deid/convert_res_to_csv.rb \
 
 The output produced two files named `positive_encounters.res.csv` and
 `no_positive_encounters.res.csv`.
+
+![Positive Encounters DEID Redacted CSV](assets/positive-encounters-deid-res-csv.png)
+
 
 _Note: Since the DEID is an automated too, we have to account for the
 possibility of not redacting all PHI data. To minimize actual PHI distributed
