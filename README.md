@@ -161,6 +161,8 @@ __Mining Topics from Documents__
 
 The topic_miner is run with data-file (in CSV format), stop-words file as input. The additional arguments to the program include number of topics, Max Iterations, Threshold, Number of Topic words. The arguments also include the path to output files: Document Topic Coverage, Topic Word Coverage, Vocabulary and Topic words.
 
+More details about the module are available at: [topic miner](https://github.com/raman162/UofICS410FinalProject/blob/main/topic_miner/README.md)
+
 ### Classifier
 
 __Requirements:__
