@@ -1,12 +1,9 @@
 import numpy as np
-import sys
+#import math
 import pandas as pd
 import collections
 import nltk
 import csv
-import codecs
-import jieba
-from pylab import random
 from csv import DictReader
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -18,27 +15,54 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 class TelehealthMiner(object):
-    def __init__(self, filePath):
+    def __init__(self, data_path):
         """
         This is init function
         """
         print('This is init function')
-        self.data_file_path = filePath;
         self.no_of_docs = 100
+        self.no_of_topics = 10
         self.topic_prob = None
-        self.notes_clean = []
-        self.notes_raw = []
+        self.data_path = data_path
+        self.pos_notes = []
+        self.no_pos_notes = []
+        self.pos_notes_raw = []
+        self.no_pos_notes_raw = []
+        self.total_notes =[]
         self.vocabulary = []
         self.vocabulary_size = 0
-        self.number_of_notes = 0
+        self.number_of_pos_notes = 0
+        self.number_of_no_pos_notes = 0
+        self.pos_vocabulary =[]
+        self.no_pos_vocabulary = []
+        #self.pos_term_doc_matrix = None
+        #self.no_pos_term_doc_matrix = None
         self.total_doc_matrix = None
+        self.pos_en_path = data_path + 'positive_encounters.res-sample-50.res.csv'
+        self.no_pos_en_path = data_path + 'no_positive_encounters.res-sample-50.res.csv'
+
+        self.pos_note_path = data_path + 'positive_notes.txt'
+        self.no_pos_note_path = data_path + 'no_positive_notes.txt'
+
+        self.pos_purpose_path = data_path + 'positive_purpose.txt'
+        self.no_pos_purpose_path = data_path + 'no_positive_purpose.txt'
+        self.stop_words = stopwords.words('english')
         self.document_topic_prob = None
         self.topic_word_prob = None
 
-    def clean_data(self):
+    def clean_data(self,flag):
+        #if flag == 0:
+         #   docs = self.pos_notes
+        #else:
+         #   docs = self.no_pos_notes
         clean_docs = []
+        dirty_docs = []
         stemmer = WordNetLemmatizer()
-        for dirty_doc in self.notes_raw:
+        if (flag == 'pos') : 
+            dirty_docs = self.pos_notes_raw
+        else:
+            dirty_docs = self.no_pos_notes_raw
+        for dirty_doc in dirty_docs:
             dirty_doc=' '.join(dirty_doc)
             # remove phi redaction brackets
             clean_doc = re.sub(r'\[\*\*.*?\*\*\]+', ' ', dirty_doc)
@@ -73,8 +97,14 @@ class TelehealthMiner(object):
 
     def clean_notes(self):
         print("####*** Inside cleaning the notes ***###")
-        self.clean_notes = self.clean_data()
-        print(self.clean_notes)
+        #print(self.pos_notes[0])
+       # self.pos_notes = clean_data(self.pos_notes)
+       # self.no_pos_notes = gm.clean_data(self.no_pos_notes)
+        self.pos_notes = self.clean_data('pos')
+        self.no_pos_notes = self.clean_data('no_pos')
+        self.total_notes = self.pos_notes
+        for note in self.no_pos_notes:
+            self.total_notes.append(note)
 
        # print(self.pos_notes[0])
 
@@ -109,30 +139,17 @@ class TelehealthMiner(object):
 
     def vocabulary_builder(self, flag):
         result_vocabulary = []
-        mapWordToId = {} 
-        mapIdToWord = {}
-        wordFrequencies = []
-        wordCount = {}
-        currentId = 0;
         if (flag =='pos'):
             lines = self.pos_notes
         else:
-            lines = self.no_pos_notes      
+            lines = self.no_pos_notes
+            
         for line in lines:
             lineSplit = line.split(' ')
             lineSplit = np.unique(lineSplit)
             for word in lineSplit:
                 if (word not in self.stop_words and len(word) > 2 and not word.isnumeric()):
                     result_vocabulary.append(word) 
-                    if word not in mapWordToId.keys():
-                        mapWordToId[word] = currentId;
-                        mapIdToWord[currentId] = word;
-                        currentId += 1;
-                    if word in wordCount:
-                        wordCount[word] += 1
-                    else:
-                        wordCount[word] = 1
-            wordFrequencies.append(wordCount)              
         return result_vocabulary
     
     def build_vocabulary(self):
@@ -174,16 +191,12 @@ class TelehealthMiner(object):
         This function is to extract notes from the encounters CSV file
         :return:
         """
-#        dataFile = codecs.open(dataFilePath, 'r', 'utf-8')
-#        for document in dataFile:
-#            document = document.strip()
-#            documentSplit = document.split(',')
-#            self.notes_raw.append(documentSplit[4])
-            
-        documents = pd.read_csv(self.data_file_path, sep=',', header='infer', encoding = 'utf-8')
-        self.notes_raw = documents.iloc[:,[False,False,False,False,True]].values.tolist()
+        print(self.pos_en_path)
+        pos_encounters = pd.read_csv(self.pos_en_path, sep=',', header='infer')
+        no_pos_encounters = pd.read_csv(self.no_pos_en_path, sep=',', header='infer')
         
-        #print(self.notes_raw)
+        self.pos_notes_raw = pos_encounters.iloc[:,[False,False,False,False,True]].values.tolist()
+        self.no_pos_notes_raw = no_pos_encounters.iloc[:,[False,False,False,False,True]].values.tolist()
         
     def build_term_doc_matrix(self):
         n = self.no_of_docs
@@ -301,37 +314,29 @@ def main():
     This is the main function
     :return:
     """
-    dataFilePath = '../patient_data/'
-    stopWordsFilePath = '../patient_data/stopwords.txt'
-    
+    data_path = '../patient_data/'
     # Write the main code here
-    if(len(sys.argv) == 11):
-        fileName = sys.argv[1]
-        stopWordsFilePath = sys.argv[2]
-        noOfTopics = int(sys.argv[3])
-        maxIterations = int(sys.argv[4])
-        epsilon = float(sys.argv[5])
-        # no of words in Topic distribution
-        noOftopicWords = int(sys.argv[6])
-        # topic distrubition for each document as output
-        topicDocDistOut = sys.argv[7]
-        # topic word distribution as output
-        topicWordDistOut = sys.argv[8]
-        # vocabulary created as output
-        vocabularyOut = sys.argv[9]
-        # topics distribution as output
-        topicsDistOut = sys.argv[10]
-    
     max_iteration = 50
     epsilon = 0.001
-    filePath = dataFilePath + fileName
-    miner = TelehealthMiner(filePath)
+    miner = TelehealthMiner(data_path)
     miner.extract_purpose_notes()
+    #miner.build_corpus()
     miner.clean_notes()
-   # miner.build_vocabulary()
-   # miner.build_term_doc_matrix()
-   # miner.initialize()
-   # miner.plsa(max_iteration,epsilon)
+    miner.build_vocabulary()
+    ##miner.topic_miner()
+    #miner.get_word_frequency()
+    miner.build_term_doc_matrix()
+    miner.initialize()
+#    miner.expectation_step()
+#    miner.maximization_step()
+#    miner.calculate_likelihood()
+#    miner.expectation_step()
+#    miner.maximization_step()
+#    miner.calculate_likelihood()
+#    miner.expectation_step()
+#    miner.maximization_step()
+#    miner.calculate_likelihood()
+    miner.plsa(max_iteration,epsilon)
     
 if __name__ == '__main__':
     main()
