@@ -94,7 +94,7 @@ class TelehealthMiner(object):
         """
         This function is to build vocabulary
         Get all the unique words from the documents
-        Build vocabular and the word counts
+        Build vocabulary and the word counts
         :return:
         """
         current_id = 0;
@@ -150,7 +150,7 @@ class TelehealthMiner(object):
         self.no_of_docs = len(self.notes_raw)
         print(self.no_of_docs)
         
-    def build_stop_words_repo(self, file_path):
+    def read_stop_words_repo(self, file_path):
         """
         This function is to build stop words
         :return:
@@ -252,8 +252,8 @@ class TelehealthMiner(object):
     
     def plsa(self):
         print ("EM iteration begins...")
-        current_likelihood = 1.0
-        prev_likelihood = 1.0
+        current_likelihood = 0.0
+        prev_likelihood = 0.0
         # prev_likelihood = current_likelihood
         for iteration in range(self.no_of_iterations):
             print("Iteration #" + str(iteration + 1) + "...")
@@ -355,7 +355,7 @@ def main():
     
     miner = TelehealthMiner(input_arg_list)
     miner.extract_purpose_notes()
-    miner.build_stop_words_repo(stop_words_file_path)
+    miner.read_stop_words_repo(stop_words_file_path)
     miner.clean_notes()
     miner.build_vocabulary()
     miner.build_term_doc_matrix()
