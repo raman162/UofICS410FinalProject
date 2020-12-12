@@ -1,0 +1,239 @@
+abilene
+akron
+allentown
+ana
+anaheim
+anchorage
+anna
+anytown
+anywhere
+anywheresville
+arlington heights
+ashley
+assumption
+astatula
+atlanta
+audtin
+augusta
+aurora
+austin
+barkhamsted
+barksdale afb
+bartow
+berwyn
+bfe
+big bird
+biloxi
+birmingham
+blountsville
+boise
+bridgeport
+brownsville
+calexico
+campton
+charlotte
+chicago
+chronic
+clarksville
+cobden
+colebrook
+columbus
+crossville
+dadeville
+dakota
+dallas
+danbury
+daphne
+davenport
+de pere
+decadia
+destin
+deterrickh
+dieterich
+disneyland
+donald duck
+douglasville
+drurey
+e. haven
+east haven
+eatonton
+edwardsville
+el paso
+ennis
+fairview heights
+flowood
+fort myers
+fort worth
+frisco
+ft lauderdale
+ft wayne
+gainesville
+garland
+georgia
+grand rapids
+grenada
+griffin
+groves
+guntersville
+hartford
+hartford city
+hartsburg
+hibiscus
+high point
+highland
+hinesville
+hogwarts
+holiday
+hollywood
+houston
+hudoson
+hudson
+huntsville
+huston
+jackosnville
+jackson
+jacksonville
+jax
+jba
+johnson city
+juniper
+kansas
+katy
+kentucky
+kissimmee
+knoxville
+lake tahoe
+lake worth
+lakeland
+land o lakes
+land o'lakes
+land-o-lakes
+largo
+leesburg
+lehigh acres
+lexington
+lincoln
+lithia
+little elm
+local
+madison
+main
+manchester
+manor
+maple
+maple city
+margate
+mayberry
+mcallen
+melbourne
+memphis
+miami
+michie
+middletown
+millsap
+milton
+milwaukee
+miranda
+mobile
+moonshine
+mooresvill
+morewater
+morton
+naples
+nashville
+new braunfels
+new britain
+new haven
+new york
+newark
+north las vegas
+north port
+nowhere
+oak forest
+okeechobee
+omaha
+orange park
+oreida
+orlando
+ottawa
+palm bay
+palm beach
+palm harbor
+palos hills
+panama city
+paradise
+paris
+pensacola
+penscola
+peoria
+phoenix
+plant city
+plymouth
+point pleasant
+port charlotte
+port st lucie
+portland
+raeford
+rainbow
+raleigh
+ramer
+red hudson
+reidsville
+richmond
+richton
+riverside
+roanoke
+rome
+rowe
+royse city
+san antonio
+saneville
+sanford
+santa barbara
+savannah
+scottsdale
+sebring
+selmar
+selmer
+siminole
+skyview
+smellville
+south bend
+southaven
+southhaven
+springfield gardens
+stantonville
+starke
+stillwater
+stormy
+summerfield
+sunny
+sunshine
+takoa
+tampa
+tavares
+tennessee
+texarkana
+the villages
+timbuktoo
+tinley
+titusville
+toccoa
+tree
+tupelo
+unknown
+van horn
+vero beach
+villa rica
+water
+waterford
+wauchula
+waukegan
+wesley chapel
+whoville
+wilmington
+winder
+wishton
+wonderful
+yuma
+zolfo springs
