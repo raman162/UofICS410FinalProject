@@ -16,6 +16,7 @@ class TelehealthMiner(object):
     def __init__(self, input_arg_list):
         """
         This is init function
+        Initializing all the matrices, maps, lists for PLSA
         """
         print('This is init function')
         self.data_file_path = input_arg_list[0];
@@ -42,7 +43,11 @@ class TelehealthMiner(object):
 
     def clean_data(self):
         """
-
+        This function is to clean the data based on regex
+        Remove all the special characters from the documents
+        Remove all the single char words
+        Remove the numbers
+        convert the words to lowercase
         :return:
         """
         clean_docs = []
@@ -67,7 +72,7 @@ class TelehealthMiner(object):
             # removing prefixed with 'b'
             clean_doc = re.sub(r'^b\s+', '', clean_doc)
 
-            # conver to lowercase
+            # convert to lowercase
             clean_doc = clean_doc.lower()
 
             # lemmatization
@@ -76,7 +81,7 @@ class TelehealthMiner(object):
             clean_doc = ' '.join(clean_doc)
 
             clean_docs.append(clean_doc)
-        #print(clean_docs)
+        # print(clean_docs)
         return clean_docs
 
     def clean_notes(self):
@@ -86,14 +91,20 @@ class TelehealthMiner(object):
         #print(self.pos_notes[0])
 
     def build_vocabulary (self):
+        """
+        This function is to build vocabulary
+        Get all the unique words from the documents
+        Build vocabular and the word counts
+        :return:
+        """
         current_id = 0;
         for line in self.clean_notes:
             lineSplit = line.split(' ')
             word_count = {}
-            #lineSplit = np.unique(lineSplit)
+            # lineSplit = np.unique(lineSplit)
             for word in lineSplit:
                 if (word not in self.stop_words_repo and len(word) > 2 and not word.isnumeric()):
-                    #result_vocabulary.append(word) 
+                    # result_vocabulary.append(word)
                     if word not in self.map_word_to_id.keys():     
                         self.map_word_to_id[word] = current_id;   
                         self.map_id_to_word[current_id] = word;    
@@ -122,7 +133,6 @@ class TelehealthMiner(object):
         top_word_frequencies = word_frequencies.most_common()
         print(top_word_frequencies)
         
-        
     def topic_miner(self):
         """
         This is topic miner function
@@ -142,7 +152,7 @@ class TelehealthMiner(object):
         
     def build_stop_words_repo(self, file_path):
         """
-        This function is to extract notes from the encounters CSV file
+        This function is to build stop words
         :return:
         """
         stop_words_file = open(file_path)
