@@ -16,14 +16,16 @@ The Topic Miner module is implementation of PLSA and mine topics from Documents
         python topic_miner.py data_file.csv stopwords.txt <num_topics> <num_iterations> <epsilon> <num_topic-words> <output-doc_topic_coverage-file> <output-topic_word_coverage> <output-vocabulary-file> <output-topic_words-file>
         
         Example:
-        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 50 5.0 1000 ../output/doctopic.txt ../output/topicword.txt ../output/dictionary.dic ../output/topics.txt
+        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 200 5.0 100 ../output/doctopic.txt ../output/topicword.txt ../output/dictionary.dic ../output/topics.txt
 
 #### Usage guidelines
 - [ ] The input is present in a folder "patient_data" as a child folder under root of the project i.e. at the same level as "topic_miner"
-- [ ] Since the input data may have PHI information,  
+- [ ] Since the input data may have PHI information, the input files are not checked into git repo
 - [ ] Make sure stopwords.txt generated from stopwords sub-module is copied to "patient_data" folder
+- [ ] Make sure both the input files *data_file.csv* and *stopwords.txt* are placed in **patient_data**
+- [ ] Additional stopwords such as patient, treatment etc.. can be added to the file once generated
 - [ ] Make sure the input file (data_file.csv) is in CSV format and it has "note" field/column in the input file
-- [ ] Values in "note" field of the input file is documents
+- [ ] Values in "note" field of the input file is documents that PLSA runs on and mines the topics on as well
 
 #### Arguments Explanation
 | Argument | Description |

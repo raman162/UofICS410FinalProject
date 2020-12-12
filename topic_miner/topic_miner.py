@@ -284,19 +284,19 @@ class TelehealthMiner(object):
     # document-topic distribution
         file = codecs.open(topic_doc_fname,'w','utf-8')
         for i in range(self.no_of_docs):
-            tmp = ''
+            doc_top_prob = ''
             for j in range(self.no_of_topics):
-                tmp += str(self.document_topic_prob[i, j]) + ' '
-            file.write(tmp + '\n')
+                doc_top_prob += str(self.document_topic_prob[i, j]) + ' '
+            file.write(doc_top_prob + '\n')
         file.close()
     
         # topic-word distribution
         file = codecs.open(topic_word_fname,'w','utf-8')
         for i in range(self.no_of_topics):
-            tmp = ''
+            top_w_prob = ''
             for j in range(0, self.vocabulary_size):
-                tmp += str(self.topic_word_prob[i, j]) + ' '
-            file.write(tmp + '\n')
+                top_w_prob += str(self.topic_word_prob[i, j]) + ' '
+            file.write(top_w_prob + '\n')
         file.close()
     
         # dictionary
@@ -312,10 +312,10 @@ class TelehealthMiner(object):
             ids = self.topic_word_prob[i, :].argsort()
             for j in ids:
                 topicword.insert(0, self.map_id_to_word[j])
-            tmp = ''
+            top_w = ''
             for word in topicword[0:min(self.no_of_topic_words_dist, len(topicword))]:
-                tmp += word + ' '
-            file.write(tmp + '\n')
+                top_w += word + ' '
+            file.write(top_w + '\n')
         file.close()
 
 
