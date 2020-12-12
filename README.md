@@ -2,9 +2,9 @@
 
 ## Team Members
 
-Raman Walwyn-Venugopal - [rsw2@illinois.edu](rsw2@illinois.edu)
-Srikanth Bharadwaz Samudrala - [sbs7@illinois.edu](sbs7@illinois.edu)
-Satish Reddy Asi - [sasi2@illinois.edu](sasi2@illinois.edu)
+- Raman Walwyn-Venugopal - [rsw2@illinois.edu](rsw2@illinois.edu)
+- Srikanth Bharadwaz Samudrala - [sbs7@illinois.edu](sbs7@illinois.edu)
+- Satish Reddy Asi - [sasi2@illinois.edu](sasi2@illinois.edu)
 
 ## Quick Links
 - [Proposal PDF](proposal.pdf)
@@ -14,9 +14,12 @@ Satish Reddy Asi - [sasi2@illinois.edu](sasi2@illinois.edu)
 
 The goal of this project is to perform topic mining and classification on
 telehealth encounter nursing notes for notes that documented a positive outcome
-for the patient form the telehealth services. To accomplish this there were
-three primary steps that had to be completed, curating the dataset, building a
-topic miner and building a classifier.
+for the patient form the telehealth services. To accomplish this, we divided
+the project into three steps; curating the dataset, building a topic miner and
+building a classifier. The topic miner will discover the topics/themes in
+positive outcomes versus non-positive outcomes. The classifier will be able to
+classify a nursing note as a positive outcome for the patient versus a
+non-positive outcome.
 
 ### Curating Dataset
 
@@ -30,7 +33,7 @@ _Note: This code was ran on ubuntu 18.04 and ubuntu 20.04_
 
 The source of the data is from [TimeDocHealth](https://timedochealth.com/) that
 has a care team that focuses on providing telehealth services to patients with
-multiple chronic diseases.  Two CSV files, each containing 10,000 records was
+multiple chronic diseases.  Two CSV files, each containing 10,000 records were
 exported from the TimeDoc system. One file named `positive_encounters.csv`
 contained only notes that were labelled as a positive outcome due to the
 telehealth services while another file named `no_positive_encounters.csv` only
@@ -41,14 +44,15 @@ array of attributes of the telehealth encounter, it is selected from a
 pre-defined list and can provide insights to the actions of the telehealth
 encounter. The  `<duration>` is the total amount of time the telehealth
 encounter took, and `<note>` is the free-text nursing note summarizing the
-encounter that we will be performing topic mining on.
+encounter. The `<note>` data is what the topic mining and classification will
+be performed on.
 
 #### Automating De-Identification of Protected Health Information (PHI)
 
-To ensure we're adhering to HIPPA [HIPPA Privacy
+To ensure we're adhering to [HIPPA Privacy
 Guidelines](https://www.physionet.org/content/deid/1.1/) we have to redact
 Protected Health Information (PHI). This was redacted using the
-De-Identification (DEID) Software Package [De-Identification Software Package](
+[De-Identification (DEID) Software Package](
 https://www.physionet.org/content/deid/1.1/). For the DEID to be effective,
 it required creating separate files of patient names and identifiers
 `pid_patientname.txt`, doctor first names `doctor_first_names.txt`, doctor last
@@ -86,9 +90,8 @@ ruby deid/convert_csv_to_text.rb demo_data/no_positive_encounters.csv
 ```
 
 The output produced two files named `positive_encounters.text` and
-`no_positive_encounters.text` respectively. Afterwards the new text files were
-copied into the DEID directory and  we ran the DEID perl script to
-remove the PHI using the following commands:
+`no_positive_encounters.text` respectively. Afterwards we ran the DEID perl
+script to remove the PHI using the following commands:
 
 ```
 # enter deid directory
@@ -132,23 +135,23 @@ TODO
 ### Classifier
 
 __Requirements:__
-- [Python 3.X][0]
+- [Python 3.X](https://www.python.org/)
 - Python Virtual Environment Package (Included in Python standard library)
 
 #### Overview of Functionality
 
 The text classifier is responsible for reviewing the notes of the telehealth
-encounters and classifying the note as positive versus non-positive. The
-`classifier` module has the following features:
-- Load positive and non-positive CSV files generated from the
-  PHI De-identification process
+encounters and classifying the note as positive outcome versus non-positive
+outcome. The `classifier` module has the following features:
+- Load positive and non-positive CSV files generated from the PHI
+  De-identification process
 - Clean data by removing PHI redaction sections, non-alphanumeric characters,
   extra white space, lemmatization, and stop words
 - Generate a classifier using the
-  [RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html) from sklearn
-- Evaluate classifier by collecting Recall, Precision, F1 Score, micro
-  averages per category, mean absolute error, mean squared error, root mean
-  squared error and the overall classification accuracy
+  [RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+  from sklearn
+- Evaluate classifier by collecting Recall, Precision, F1 Score, micro averages
+  per category, and the overall classification accuracy
 - Store classifier to a file
 - Load classifier from a file
 - Score optimizer that steps through a combination of number of features and
