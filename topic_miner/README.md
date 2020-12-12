@@ -16,7 +16,7 @@ The Topic Miner module is implementation of PLSA and mine topics from Documents
         python topic_miner.py data_file.csv stopwords.txt <num_topics> <num_iterations> <epsilon> <num_topic-words> <output-doc_topic_coverage-file> <output-topic_word_coverage> <output-vocabulary-file> <output-topic_words-file>
         
         Example:
-        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 200 5.0 100 ../output/doctopic.txt ../output/topicword.txt ../output/dictionary.dic ../output/topics.txt
+        python topic_miner.py encounters.res-sample-50.res.csv stopwords.txt 10 200 5.0 1000 ../output/doctopic.txt ../output/topicword.txt ../output/dictionary.dic ../output/topics.txt
 
 #### Usage guidelines
 - [ ] The input is present in a folder "patient_data" as a child folder under root of the project i.e. at the same level as "topic_miner"
