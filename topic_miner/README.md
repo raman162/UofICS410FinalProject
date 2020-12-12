@@ -22,7 +22,7 @@ The Topic Miner module is implementation of PLSA and mine topics from Documents
 - [ ] The input is present in a folder "patient_data" as a child folder under root of the project i.e.
 - [ ] Make sure stopwords.txt generated from stopwords sub-module is copied to 
 
-####Arguments Explanation
+#### Arguments Explanation
 | Argument | Description |
 |:-------- |:-----------|
 | data_file.csv  | Teledoc data in CSV file      |
