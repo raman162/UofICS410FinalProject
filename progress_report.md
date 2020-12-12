@@ -79,13 +79,13 @@ START_OF_RECORD=<PATIENT_ID>||||<DOCUMENT_ID>||||
 ```
 
 We accomplished this transformation for both of the CSV exported files using a
-ruby script located at `deid_support/convert_csv_to_text.rb` and ran the
+ruby script located at `deid/convert_csv_to_text.rb` and ran the
 following commands:
 
 ```
 # convert csv files to deid text format
-ruby deid_support/convert_csv_to_text.rb positive_encounters.csv
-ruby deid_support/convert_csv_to_text.rb no_positive_encounters.csv
+ruby deid/convert_csv_to_text.rb positive_encounters.csv
+ruby deid/convert_csv_to_text.rb no_positive_encounters.csv
 ```
 
 The output produced two files named `positive_encounters.text` and
@@ -101,15 +101,15 @@ perl deid.pl no_positive_encounters deid-output.config
 
 The output produced two PHI redacted files named `positive_encounters.res` and
 `no_positive_encounters.res`. To convert the files back into the CSV format, we
-used the following script located at `deid_support/convert_res_to_csv.rb` and
+used the following script located at `deid/convert_res_to_csv.rb` and
 ran the following commands:
 
 ```
 # convert redacted res files to csv
-ruby deid_support/convert_res_to_csv.rb \
+ruby deid/convert_res_to_csv.rb \
   positive_encounters.res \
   positive_encounters.csv
-ruby deid_support/convert_res_to_csv.rb \
+ruby deid/convert_res_to_csv.rb \
   no_positive_encounters.res \
   no_positive_encounters.csv
 ```
@@ -125,12 +125,12 @@ taken from both the `positive_encounters.res` and `no_positive_encounters.res`
 file and manually verified to not contain PHI.  After the verification, the
 sampled data was shared with the rest of the team so to create scripts that
 will perform the topic mining and analysis. This was accomplished by utilizing
-the `deid_support/sample_res.rb` and running the following commands:
+the `deid/sample_res.rb` and running the following commands:
 
 ```
 # sample res files per manual review
-ruby deid_support/sample_res.rb positive_encounters.res 50
-ruby deid_support/sample_res.rb no_positive_encounters.res 50
+ruby deid/sample_res.rb positive_encounters.res 50
+ruby deid/sample_res.rb no_positive_encounters.res 50
 ```
 The output produced two files only containing 50 redacted PHI documents named
 ```
@@ -142,10 +142,10 @@ transformed to the original CSV format by running the following commands:
 
 ```
 # convert sampled res files to CSV format
-ruby deid_support/convert_res_to_csv.rb \
+ruby deid/convert_res_to_csv.rb \
   positive_encounters.res-sample-50.res \
   positive_encounters.csv
-ruby deid_support/convert_res_to_csv.rb \
+ruby deid/convert_res_to_csv.rb \
   no_positive_encounters.res-sample-50.res \
   no_positive_encounters.csv
 ```
