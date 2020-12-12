@@ -14,8 +14,8 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 ## PATH TO FILES
-POSITIVE_CSV_FILE = '../patient_data/positive_encounters.res-sample-50.res.csv'
-NO_POSITIVE_CSV_FILE = '../patient_data/no_positive_encounters.res-sample-50.res.csv'
+POSITIVE_CSV_FILE = '../demo_data/positive_encounters.res.csv'
+NO_POSITIVE_CSV_FILE = '../demo_data/no_positive_encounters.res.csv'
 CLASSIFIER_FILE = './text_classifier'
 
 def load_data():
