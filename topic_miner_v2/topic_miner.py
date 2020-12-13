@@ -56,8 +56,6 @@ for topic in result.word_given_topic:
         word_probs.append(str(word_prob[1]))
     words = ' '.join(topic_words)
     probs = ' '.join(word_probs)
-    print('words', words)
-    print('probs', probs)
     topic_word_file.write(words + '\n')
     topic_word_prob_file.write(probs + '\n')
     topic_word_prob_grouped_file.write(str(topic) + '\n')
