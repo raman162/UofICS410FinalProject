@@ -113,20 +113,20 @@ The optimizer can be run following the steps below:
 ```
 import classifier
 
-docs, labels = load_data()
-clean_docs = clean_data(docs)
+docs, labels = classifier.load_data()
 
 result = classifier.optimize_score(
   docs=docs,
   labels=labels,
   min_features=500,
-  feature_step=500,
-  max_features=2000,
+  feature_step=100,
+  max_features=1500,
   min_estimators=500,
   max_estimators=1500,
-  step_size)
+  estimator_step=100)
 print(result)
 
+clean_docs = classifier.clean_data(docs)
 text_classifier, train_test_data = classifier.generate(
   clean_docs,
   labels
