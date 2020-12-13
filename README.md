@@ -457,13 +457,17 @@ definitely overlapping themes.
 The classifier we created performs only well on large datasets. On the sampled
 and demo datasets of only 100 records, the maximum classification accuracy that
 was achieved was 85%. When training the classifier on the complete corpus of
-20,000 documents, the classification accuracy jumped to 90%. The classifier
+20,000 documents, the classification accuracy jumped to 90%. These maximum
+scores were calculated by using an iterative algorithm that varied the number
+of features and the number of estimators used by the classifier. The classifier
 consistently had better precision at 94% when labelling positive documents
 versus non-positive but had worse recall at 85% for all positive documents.
 This means that a user can trust the result of a classification of a positive
 document but cannot guarantee all to be retrieved. This would be preferred for
-a recommendation engine. The classifier was also tested on the documents
-containing the top words from positive and non-positive topics generated from
-the topic analysis step. The classifier correctly classified the doc containing
-words from positive topics as 'positive' and the doc containing words from
-non-positive topics as 'non-positive'.
+a recommendation engine.
+
+BONUS: The classifier was also tested on the documents containing the top words
+from positive and non-positive topics generated from the topic analysis step.
+The classifier correctly classified the doc containing words from positive
+topics as 'positive' and the doc containing words from non-positive topics as
+'non-positive'.
