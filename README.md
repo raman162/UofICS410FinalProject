@@ -137,12 +137,12 @@ possibility of not redacting all PHI data. To minimize actual PHI distributed
 This sampled may be provided upon request by emailing
 [rsw2@illinois.edu](rsw2@illinois.edu)_
 
-### Topic Mining and Analysis on Dataset
+### Topic Mining
 
 __Requirements:__
 - [Python 3.X](https://www.python.org/)
 
-_Python Libraries Used:_
+__Python Libraries Used:__
 - nltk
 - pandas
 - numpy
@@ -162,6 +162,86 @@ __Mining Topics from Documents__
 The topic_miner is run with data-file (in CSV format), stop-words file as input. The additional arguments to the program include number of topics, Max Iterations, Threshold, Number of Topic words. The arguments also include the path to output files: Document Topic Coverage, Topic Word Coverage, Vocabulary and Topic words.
 
 More details about the module are available at: [topic miner](https://github.com/raman162/UofICS410FinalProject/blob/main/topic_miner/README.md)
+
+_Note: Due to the slow performance of our manually written PLSA topic miner, we
+created  [topic miner v2](topic_miner_v2/README.md) that uses an open source
+python PLSA package and produces the same documents as our home-crafted PLSA
+topic miner._
+
+#### Setup
+
+
+change to directory of topic miner
+```
+cd topic_miner_v2
+```
+
+Create new virtual environment
+```
+python -m venv venv
+```
+
+Activate virtual environment
+```
+source venv/bin/activate
+```
+
+Install required packages
+```
+pip install -r requirements.txt
+```
+
+#### Run Topic Miner
+
+```
+# python topic_miner.py <path/to/encounters.res.csv> <number_of_topics>
+
+python topic_miner.py ../demo_data/all_encounters.res.csv 10
+```
+
+Output would be:
+
+```
+# topic coverage of topic probability per document in corpus
+all_encounters.res.csv.10-doc-topic-cov.txt
+
+#grouping of words and probabilities of topic per line
+all_encounters.res.csv.10-topic-word-probs-grouped.txt
+
+#all the probabilities for each topic per line
+all_encounters.res.csv.10-topic-word-probs.txt
+
+#all the words for each topic per line
+all_encounters.res.csv.10-topics.txt
+
+#vocabulary of corpus
+all_encounters.res.csv.vocab
+```
+
+
+### Topic Analysis
+
+__Requirements:__
+- [Python 3.X](https://www.python.org/)
+
+This topic analysis script performs analysis on the results of the topic miner
+when both the positive and non-positive encounters are included in the whole
+corpus. It attempts to:
+1. Identify which topics are related to positive outcomes and which topics are
+   related to non-positive outcomes
+2. Pull the top words from the positive outcome topics and non-positive outcome
+   topics
+3. Highlight which top words from positive and non-positive overlap
+   with each other versus which words are unique to their own topics
+4. generates 3 files: `pos-non-pos-topics.txt`, `top-pos-words.txt` and
+   `top-non-pos-words.txt`
+
+#### Usage
+```
+python topic_analysis/topic_analysis.py \
+  demo_data/all_encounters.res.csv.10-doc-topic-cov.txt \
+  demo_data/all_encounters.res.csv.10-topics.txt
+```
 
 ### Classifier
 
@@ -241,24 +321,27 @@ constant. An example of the classifier evaluation is shown below.
 ```
               precision    recall  f1-score   support
 
-non-positive       0.71      1.00      0.83        10
-    positive       1.00      0.60      0.75        10
+non-positive       0.88      0.95      0.91      2014
+    positive       0.94      0.85      0.90      1842
 
-    accuracy                           0.80        20
-   macro avg       0.86      0.80      0.79        20
-weighted avg       0.86      0.80      0.79        20
+    accuracy                           0.91      3856
+   macro avg       0.91      0.90      0.90      3856
+weighted avg       0.91      0.91      0.90      3856
 
-Accuracy:  0.8
+Accuracy:  0.9050829875518672
 ```
 
-The classifier can be loaded for usage in scripts by doing the following
+The classifier can be loaded and used on new documents. Enter the python
+console and run the following commands
 ```
 import classifier.py
 
 text_classifier = classifier.load(classifier.CLASSIFIER_FILE)
-docs = ['Scheduled transportation for patient appointment on Thursday', 'discussed personal goals with patient']
-prepped_docs = classifier.prepare_data(docs)
-predictions = text_classifier.predict(prepped_docs)
+docs = [
+  'Scheduled transportation for patient appointment on Thursday',
+  'discussed personal goals with patient for patient to work on quitting smoking'
+  ]
+predictions = classifier.predict(text_classifier, docs)
 print(predictions)
 ```
 
@@ -297,3 +380,47 @@ optimal_num_estimators - The number of estimators used to generate optimal score
 
 The optimal number of features used was determined to be 1500 while the optimal
 number of estimators was determined to be 750.
+
+#### BONUS: Classifying the top positive and top non-positive topic words
+
+As a bonus test, we would test the classifier predictions on the top positive
+and non-positive words generated from the [topic analysis](#topic-analysis)
+step.
+
+```
+# enter python console
+python
+
+# import classifier module
+import classifier
+
+# load stored classifier
+text_classifier = classifier.load(classifier.CLASSIFIER_FILE)
+```
+
+Classify top positive words
+```
+f = open('../demo_data/all_encounters.res.csv.2-topics.txt.top-pos-words.txt', 'r')
+pos_docs = [f.read()]
+f.close()
+print('top pos words: ', pos_docs[0])
+print('top pos words classifier predictions: ', classifier.predict(text_classifier, pos_docs)[0])
+```
+
+Classify top non-positive words
+```
+f = open('../demo_data/all_encounters.res.csv.2-topics.txt.top-non-pos-words.txt', 'r')
+non_pos_docs = [f.read()]
+f.close()
+print('top non pos words: ', non_pos_docs[0])
+print('top non pos words classifier predictions: ', classifier.predict(text_classifier, non_pos_docs)[0])
+```
+
+Output is
+```
+top pos words:  pharmacy appointment medication service information poa cuff call care sugar pressure concern blood morning meal state report insulin transportation time
+top pos words classifier predictions:  positive
+
+top non pos words:  pharmacy medication education exercise today appt goal inhaler level weight plan pressure knee minute state phone transportation day time ncm
+top non pos words classifier predictions:  non-positive
+```

@@ -14,9 +14,9 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 ## PATH TO FILES
-POSITIVE_CSV_FILE = '../patient_data/positive_encounters.res.csv'
-NO_POSITIVE_CSV_FILE = '../patient_data/no_positive_encounters.res.csv'
-CLASSIFIER_FILE = './text_classifier'
+POSITIVE_CSV_FILE = '../demo_data/positive_encounters.res.csv'
+NO_POSITIVE_CSV_FILE = '../demo_data/no_positive_encounters.res.csv'
+CLASSIFIER_FILE = './demo_text_classifier'
 
 def load_data():
     docs = []
@@ -78,10 +78,10 @@ def clean_data(docs):
 
     return clean_docs
 
-def generate(docs, labels, n_estimators=750, test_size=0.2, random_state=0, max_features=1500, min_df=10, max_df=0.8):
-    numeric_docs = transform_data_to_numeric(docs, max_features, min_df, max_df)
+def generate(corpus, labels, n_estimators=750, test_size=0.2, random_state=0, max_features=1500, min_df=10, max_df=0.8):
+    transformer, numeric_corpus = generate_numeric_transformer(corpus, max_features, min_df, max_df)
     train_docs, test_docs, train_labels, test_labels = train_test_split(
-        numeric_docs,
+        numeric_corpus,
         labels,
         test_size=test_size,
         random_state=random_state)
@@ -97,20 +97,30 @@ def generate(docs, labels, n_estimators=750, test_size=0.2, random_state=0, max_
         }
     return classifier, train_test_data
 
+def predict(classifier, docs):
+    corpus, labels = load_data()
+    clean_corpus = clean_data(corpus)
+    clean_docs = clean_data(docs)
+    transformer, numeric_corpus = generate_numeric_transformer(clean_corpus)
+    numeric_docs = transformer.transform(clean_docs).toarray()
+    return classifier.predict(numeric_docs)
+
 def prepare_data(docs):
     raw_docs, labels = load_data()
-    all_docs = docs + raw_docs
-    return transform_data_to_numeric(clean_data(all_docs))[:len(docs)]
+    transformer = generate_numeric_transformer(raw_docs)
+    return transformer.transform(docs).toarray()
 
 
-def transform_data_to_numeric(docs, max_features=1500, min_df=10, max_df=0.8):
+def generate_numeric_transformer(docs, max_features=1500, min_df=10, max_df=0.8):
     max_df = 1.0 if len(docs) < min_df else max_df
     transformer = TfidfVectorizer(
             max_features=max_features,
             min_df=min(min_df, len(docs)),
             max_df=max_df,
             stop_words = stopwords.words('english'))
-    return transformer.fit_transform(docs).toarray()
+    fitted_data = transformer.fit_transform(docs)
+    return transformer, fitted_data.toarray()
+
 
 def evaluate(classifier, train_test_data):
     test_docs = train_test_data['test_docs']
