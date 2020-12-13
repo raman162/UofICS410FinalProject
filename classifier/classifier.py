@@ -14,8 +14,8 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 ## PATH TO FILES
-POSITIVE_CSV_FILE = '../demo_data/positive_encounters.res.csv'
-NO_POSITIVE_CSV_FILE = '../demo_data/no_positive_encounters.res.csv'
+POSITIVE_CSV_FILE = '../patient_data/positive_encounters.res.csv'
+NO_POSITIVE_CSV_FILE = '../patient_data/no_positive_encounters.res.csv'
 CLASSIFIER_FILE = './text_classifier'
 
 def load_data():
@@ -98,13 +98,16 @@ def generate(docs, labels, n_estimators=750, test_size=0.2, random_state=0, max_
     return classifier, train_test_data
 
 def prepare_data(docs):
-    transform_data_to_numeric(clean_data(docs))
+    raw_docs, labels = load_data()
+    all_docs = docs + raw_docs
+    return transform_data_to_numeric(clean_data(all_docs))[:len(docs)]
 
 
-def transform_data_to_numeric(docs, max_features=2000, min_df=10, max_df=0.8):
+def transform_data_to_numeric(docs, max_features=1500, min_df=10, max_df=0.8):
+    max_df = 1.0 if len(docs) < min_df else max_df
     transformer = TfidfVectorizer(
             max_features=max_features,
-            min_df=min_df,
+            min_df=min(min_df, len(docs)),
             max_df=max_df,
             stop_words = stopwords.words('english'))
     return transformer.fit_transform(docs).toarray()
