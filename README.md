@@ -15,11 +15,12 @@
 The goal of this project is to perform topic mining and classification on
 telehealth encounter nursing notes for notes that documented a positive outcome
 for the patient form the telehealth services. To accomplish this, we divided
-the project into three steps; curating the dataset, building a topic miner and
-building a classifier. The topic miner will discover the topics/themes in
-positive outcomes versus non-positive outcomes. The classifier will be able to
-classify a nursing note as a positive outcome for the patient versus a
-non-positive outcome.
+the project into four steps;
+1. curating the dataset
+2. build topic miner and mine topics from dataset
+3. perform analysis on topics
+4. build binary classifier that attempts to predict if a document is a positive
+   outcome for the patient
 
 ### Curating Dataset
 
@@ -39,37 +40,38 @@ contained only notes that were labelled as a positive outcome due to the
 telehealth services while another file named `no_positive_encounters.csv` only
 contained notes that weren't labelled as a positive outcome for the patient.
 The format of the exported CSV files are as follows:
-`<note_id>,<patient_id>,<purpose>,<duration>,<note>` The `<purpose>` is an
-array of attributes of the telehealth encounter, it is selected from a
-pre-defined list and can provide insights to the actions of the telehealth
-encounter. The  `<duration>` is the total amount of time the telehealth
-encounter took, and `<note>` is the free-text nursing note summarizing the
-encounter. The `<note>` data is what the topic mining and classification will
-be performed on.
+`<note_id>,<patient_id>,<purpose>,<duration>,<note>`.
+
+- `<purpose>` is an array of attributes of the telehealth encounter, it is
+  selected from a pre-defined list and can provide insights to the actions of
+  the telehealth encounter.
+- `<duration>` is the total amount of time the telehealth encounter took
+- `<note>` is the free-text nursing note summarizing the encounter. This data
+  is what the topic mining and classification will be performed
 
 ![Positive Encounter Note CSV](assets/positive-encounters-csv.png)
 
 #### Automating De-Identification of Protected Health Information (PHI)
 
 To ensure we're adhering to [HIPPA Privacy
-Guidelines](https://www.physionet.org/content/deid/1.1/) we have to redact
-Protected Health Information (PHI). This was redacted using the
+Guidelines](https://www.physionet.org/content/deid/1.1/), 
+Protected Health Information (PHI) was redacted using
 [De-Identification (DEID) Software Package](
-https://www.physionet.org/content/deid/1.1/). For the DEID to be effective,
-it required creating separate files of patient names and identifiers
-`pid_patientname.txt`, doctor first names `doctor_first_names.txt`, doctor last
-names `doctor_last_names.txt`, locations `local_places.txt`, and company names
-`company_names.txt`. The `pid_patientname.txt` was created by referencing all
-the patients from the two exported CSV lists and curating a file formatted with
-each line as `<PATIENT_ID>||||<PATIENT_FIRST_NAME>||||<PATIENT_LAST_NAME>`. The
-`doctor_first_names.txt` and the `doctor_last_names.txt` files were created by
-referencing exporting each care team member such as their Primary Care
-Physician (PCP), Radiologist, etc. and writing each name to a new line. Both
-files were scrubbed for duplicates and invalid data. The `local_places.txt` was
-created by taking each address related for the patient and writing the city to
-a town to each line. The `company_names.txt` file was created by listing out
-the pharmacies and local healthcare organizations that the patient utilizes and
-writing each to a new line.
+https://www.physionet.org/content/deid/1.1/). For the DEID to be effective, it
+had to be configured with the following lists:
+- `pid_patientname.txt` - patient names and identifiers. Was created by
+  referencing all the patients from the two exported CSV lists and curating a
+  file formatted with each line as
+  `<PATIENT_ID>||||<PATIENT_FIRST_NAME>||||<PATIENT_LAST_NAME>`
+- `doctor_first_names.txt` - doctor first names. Created by exporting each care
+  team member for the patient such as their Primary Care Provider, Radiologist,
+  etc.
+- `doctor_last_names.txt` - doctor last names. Created using same strategy as
+  doctor first names.
+- `unambig_local_places.txt` - locations near the patient. Created using the
+  cities, towns of addresses for patients and businesses near them.
+- `company_names.txt` - company names. Created by listing out local healthcare
+  organizations surrounding the patient. 
 
 For the DEID to perform the redaction of PHI, it required to be fed the notes
 in a particular format. So the exported CSV file had to be transformed to the
@@ -159,7 +161,11 @@ Stop words are generated using standard python nltk libraries. The stopwords are
 
 __Mining Topics from Documents__
 
-The topic_miner is run with data-file (in CSV format), stop-words file as input. The additional arguments to the program include number of topics, Max Iterations, Threshold, Number of Topic words. The arguments also include the path to output files: Document Topic Coverage, Topic Word Coverage, Vocabulary and Topic words.
+The topic_miner is run with data-file (in CSV format), stop-words file as input. The additional arguments to the program include number of topics, Max Iterations, Threshold, Number of Topic words. The arguments also include the path to output files:
+- Document Topic Coverage
+- Topic Word Coverage
+- Vocabulary
+- Topic words
 
 More details about the module are available at: [topic miner](https://github.com/raman162/UofICS410FinalProject/blob/main/topic_miner/README.md)
 
@@ -383,7 +389,7 @@ number of estimators was determined to be 750.
 
 #### BONUS: Classifying the top positive and top non-positive topic words
 
-As a bonus test, we would test the classifier predictions on the top positive
+As a bonus test, we tested the classifier predictions on the top positive
 and non-positive words generated from the [topic analysis](#topic-analysis)
 step.
 
@@ -424,3 +430,40 @@ top pos words classifier predictions:  positive
 top non pos words:  pharmacy medication education exercise today appt goal inhaler level weight plan pressure knee minute state phone transportation day time ncm
 top non pos words classifier predictions:  non-positive
 ```
+
+### Conclusion
+
+Automating the redaction of PHI data is plausible and should be used by data
+scientists trying to perform analysis on free text health data to respect
+patient privacy and adhere to HIPPA rules. One thing to note is that the
+redaction process is slow on large datasets. Redacting PHI on the 20,000
+document dataset took nearly an hour running on an Intel i7 10th gen processor.
+To avoid this issue in a production workflow with much larger datasets, an
+automated redacted pipeline should be considered where as soon as a note is
+created, a redaction process is triggered and stored in a separate bucket.
+
+When performing topic mining with our home-crafted PLSA topic miner, we noted
+that performance was poor on large datasets when compared to an open-source
+PLSA python package. This was likely due to unoptimized implementation of the
+EM-algorithm when handling large matrices. While performing topic analysis, we
+noticed that the fewer number of topics generated made it easier to relate
+topics to positive outcomes and other topics to non-positive outcomes. As we
+increased the topic count when performing PLSA, this was no longer the case and
+the distributions of topics among positive corpus and non-positive corpus were
+similar. From this behaviour, we can infer that there is definitely a
+difference of themes discussed in positive outcomes but that there is
+definitely overlapping themes.
+
+The classifier we created performs only well on large datasets. On the sampled
+and demo datasets of only 100 records, the maximum classification accuracy that
+was achieved was 85%. When training the classifier on the complete corpus of
+20,000 documents, the classification accuracy jumped to 90%. The classifier
+consistently had better precision at 94% when labelling positive documents
+versus non-positive but had worse recall at 85% for all positive documents.
+This means that a user can trust the result of a classification of a positive
+document but cannot guarantee all to be retrieved. This would be preferred for
+a recommendation engine. The classifier was also tested on the documents
+containing the top words from positive and non-positive topics generated from
+the topic analysis step. The classifier correctly classified the doc containing
+words from positive topics as 'positive' and the doc containing words from
+non-positive topics as 'non-positive'.
