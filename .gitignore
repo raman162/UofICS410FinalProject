@@ -2,3 +2,5 @@ patient_data
 sample_data
 classifier/venv
 classifier/__pycache__
+topic_miner/venv
+topic_miner_v2/venv
