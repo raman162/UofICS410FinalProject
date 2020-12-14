@@ -9,6 +9,7 @@
 ## Quick Links
 - [Proposal PDF](proposal.pdf)
 - [Progress Report PDF](progress_report.pdf)
+- [Video Demo (YOUTUBE)](https://www.youtube.com/watch?v=aqiFgAOPW80)
 
 ## Overview
 
