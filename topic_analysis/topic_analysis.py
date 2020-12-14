@@ -51,12 +51,12 @@ sorted_diffs = sorted(range(len(pos_non_pos_topic_average_diff)), key=lambda i: 
 num_topics_to_select = int(min(NUMBER_OF_TOPICS/2, 2) * -1)
 top_pos_topics = sorted_diffs[num_topics_to_select:]
 print('#######################')
-print('top_pos_topics: ', top_pos_topics)
+print('top_pos_topics: ', list(map(lambda x: x + 1, top_pos_topics)))
 print('######################\n')
 sorted_diffs.reverse()
 top_non_pos_topics = sorted_diffs[num_topics_to_select:]
 print('#######################')
-print('top_non_pos_topics: ', top_non_pos_topics)
+print('top_non_pos_topics: ', list(map(lambda x: x + 1, top_non_pos_topics)))
 print('######################\n')
 
 
@@ -103,8 +103,8 @@ print('######################\n')
 pos_no_pos_topic_cov_file_path = TOPIC_WORD_FILE_PATH + '.pos-non-pos-topics.txt'
 print('writing top pos and non pos topics to: ', pos_no_pos_topic_cov_file_path)
 pos_no_pos_topic_cov_file = open(pos_no_pos_topic_cov_file_path, 'w')
-pos_no_pos_topic_cov_file.write('top_pos_topics: ' + str(top_pos_topics) + '\n')
-pos_no_pos_topic_cov_file.write('top_non_pos_topics: ' + str(top_non_pos_topics))
+pos_no_pos_topic_cov_file.write('top_pos_topics: ' + str(map(lambda x: x + 1, top_pos_topics)) + '\n')
+pos_no_pos_topic_cov_file.write('top_non_pos_topics: ' + str(map(lambda x: x +1, top_non_pos_topics)))
 pos_no_pos_topic_cov_file.close()
 
 top_pos_words_file_path = TOPIC_WORD_FILE_PATH + '.top-pos-words.txt'
